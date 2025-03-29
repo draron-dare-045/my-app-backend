@@ -1,13 +1,12 @@
 const express = require("express");
 const fetch = require("node-fetch");
+const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-
-const cors = require("cors");
-app.use(cors());
+app.use(cors()); // Enable CORS for frontend requests
 
 app.get("/api/news", async (req, res) => {
     const query = req.query.q || "aviation"; 
