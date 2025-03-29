@@ -1,26 +1,28 @@
-const jsonServer = require('json-server');
-const server = jsonServer.create();
-const router = jsonServer.router('db.json');
-const middlewares = jsonServer.defaults();
+const express = require("express");
+const fetch = require("node-fetch");
+require("dotenv").config();
 
-server.use(middlewares);
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-// Enable CORS for all requests
-server.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*'); // Allows requests from all domains
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS'); // Allows necessary HTTP methods
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    
-    if (req.method === 'OPTIONS') {
-        return res.sendStatus(204); // Preflight request response
+
+const cors = require("cors");
+app.use(cors());
+
+app.get("/api/news", async (req, res) => {
+    const query = req.query.q || "aviation"; 
+    const API_KEY = process.env.NEWS_API_KEY;   
+    const API_URL = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&language=en&apiKey=${API_KEY}`;
+
+    try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch news" });
     }
-    
-    next();
 });
 
-server.use(router); // Removes the `/api` prefix
-
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-    console.log(`JSON Server is running on port ${PORT}`);
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
