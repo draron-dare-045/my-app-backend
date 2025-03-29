@@ -6,7 +6,13 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors()); // Enable CORS for frontend requests
+app.use(cors()); 
+
+
+app.get("/", (req, res) => {
+    res.send("Aviation News API is running . Use /api/news to get news.");
+});
+
 
 app.get("/api/news", async (req, res) => {
     const query = req.query.q || "aviation"; 
